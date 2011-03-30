@@ -1,0 +1,8 @@
+tags
+_ReSharper*
+bin
+obj
+*.user
+*.suo
+*.cache
+pkg
