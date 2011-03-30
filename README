@@ -1,0 +1,9 @@
+Jwt4Net is a C# library for issuing and consuming JWT tokens.
+
+It offers strongly typed token values, and simple model for issuance and consumption.
+
+The library is currently dependent on a bunch of third-party libraries, but I hope to replace those over time.
+
+The library is currently compatible with draft 1 of the JWT spec, and supports ECC tokens.
+
+As the specification matures, the library will keep up to date with changes, with the aim of fully supporting a ratified JWT proposal.
