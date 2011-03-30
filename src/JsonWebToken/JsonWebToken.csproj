@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{20E4D6B1-8F93-460D-9B95-1FAA9970F434}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jwt4Net</RootNamespace>
+    <AssemblyName>Jwt4Net</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LitJson">
+      <HintPath>..\lib\LitJson.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\lib\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Security.Cryptography">
+      <HintPath>..\lib\Security.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Claims\Claim.cs" />
+    <Compile Include="Claims\ClaimDescriptor.cs" />
+    <Compile Include="Claims\IClaim.cs" />
+    <Compile Include="Claims\IJsonSerializable.cs" />
+    <Compile Include="Claims\NullClaim.cs" />
+    <Compile Include="Claims\UnixTimeStamp.cs" />
+    <Compile Include="Configuration\DefaultContainerConfig.cs" />
+    <Compile Include="Configuration\DefaultJwt4NetConfig.cs" />
+    <Compile Include="Configuration\IIssuerConfig.cs" />
+    <Compile Include="Configuration\IKeyConfig.cs" />
+    <Compile Include="Configuration\IConsumerConfig.cs" />
+    <Compile Include="Configuration\Jwt4NetXmlConfig.cs" />
+    <Compile Include="Consumer\Signing\EccValidation.cs" />
+    <Compile Include="Consumer\Validation\ExpiryDateMustBeInThePastRule.cs" />
+    <Compile Include="Consumer\Validation\IssuerMustBeTrustedRule.cs" />
+    <Compile Include="Consumer\Validation\ITokenValidationRule.cs" />
+    <Compile Include="Consumer\Validation\SignatureMustBeValidRule.cs" />
+    <Compile Include="Configuration\IContainerConfig.cs" />
+    <Compile Include="Consumer\Validation\TokenUnparseable.cs" />
+    <Compile Include="ITokenConsumer.cs" />
+    <Compile Include="Consumer\TokenConsumer.cs" />
+    <Compile Include="ITokenIssuer.cs" />
+    <Compile Include="Jwt4NetContainer.cs" />
+    <Compile Include="Signing\Base64Encoder.cs" />
+    <Compile Include="Consumer\InvalidTokenDataException.cs" />
+    <Compile Include="Consumer\InvalidTokenFormatException.cs" />
+    <Compile Include="Claims\JsonClaimSet.cs" />
+    <Compile Include="Claims\JsonWebToken.cs" />
+    <Compile Include="Claims\JsonWebTokenHeader.cs" />
+    <Compile Include="Claims\KnownClaims.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Signing\Class1.cs" />
+    <Compile Include="Signing\CryptoProvider.cs" />
+    <Compile Include="Issuer\EcdsaCngSigning.cs" />
+    <Compile Include="Signing\HmacSigning.cs" />
+    <Compile Include="Signing\ICngKeyProvider.cs" />
+    <Compile Include="Signing\InvalidBase64StringFormatException.cs" />
+    <Compile Include="Signing\IPublicKeyCache.cs" />
+    <Compile Include="Signing\IRsaPublicKeyProvider.cs" />
+    <Compile Include="Signing\ISymmetricKeyProvider.cs" />
+    <Compile Include="Issuer\RsaSigning.cs" />
+    <Compile Include="Signing\SigningAlgorithm.cs" />
+    <Compile Include="Issuer\TokenIssuer.cs" />
+    <Compile Include="Consumer\TokenReader.cs" />
+    <Compile Include="Tinyioc.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
