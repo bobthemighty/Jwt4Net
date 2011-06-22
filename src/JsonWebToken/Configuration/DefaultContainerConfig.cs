@@ -14,6 +14,7 @@ namespace Jwt4Net.Configuration
             
             c.AutoRegister(typeof(ITokenIssuer).Assembly);
             c.Register(DefaultJwt4NetConfig.Instance);
+            c.Register(DefaultJwt4NetConfig.Instance.ReaderSettings);
             c.Register(DefaultJwt4NetConfig.Instance.Issuer);
             c.Register(DefaultJwt4NetConfig.Instance.Issuer.Key);
 
