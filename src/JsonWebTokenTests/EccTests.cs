@@ -208,6 +208,24 @@ public class FakeEccKeyRepository : ICngKeyProvider, IEccPublicKeyProvider
         }
     }
 
+    public class EmptyKeyContainer : ICngKeyProvider, IRsaPublicKeyProvider, IEccPublicKeyProvider
+    {
+        public CngKey GetKey()
+        {
+            throw new NotImplementedException();
+        }
+
+        RSACng IRsaPublicKeyProvider.LoadRemoteKey(JsonWebTokenHeader header)
+        {
+            throw new NotImplementedException();
+        }
+
+        ECDsaCng IEccPublicKeyProvider.LoadRemoteKey(JsonWebTokenHeader header)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 public class FakeRsaKeyRepository :ICngKeyProvider, IRsaPublicKeyProvider
 {
     private readonly CngKey _key;
@@ -279,6 +297,11 @@ public class FakeRsaKeyRepository :ICngKeyProvider, IRsaPublicKeyProvider
             public string KeyUriPattern
             {
                 get { return ".*"; }
+            }
+
+            public string SharedSecret
+            {
+                get { return "secret"; }
             }
         }
     }

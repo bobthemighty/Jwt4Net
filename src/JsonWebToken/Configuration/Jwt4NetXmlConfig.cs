@@ -111,6 +111,11 @@ namespace Jwt4Net.Configuration
                     return (string)this["keyUriPattern"];
                 }
             }
+
+            public string SharedSecret
+            {
+                get { return (string) this["keyValue"]; }
+            }
         }
 
         public class KeyConfig : ConfigurationElement, IKeyConfig
@@ -176,5 +181,6 @@ namespace Jwt4Net.Configuration
     {
         string Name { get; }
         string KeyUriPattern { get; }
+        string SharedSecret { get; }
     }
 }

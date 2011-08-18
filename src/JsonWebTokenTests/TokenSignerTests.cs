@@ -1,4 +1,5 @@
-﻿using Jwt4Net;
+﻿using System;
+using Jwt4Net;
 using Jwt4Net.Configuration;
 using Jwt4Net.Issuer;
 using Jwt4Net.Signing;
@@ -17,11 +18,29 @@ namespace JsonWebTokenTests
 
     public class MockSymmetricKeyProvider : ISymmetricKeyProvider
     {
-        private byte[] _key;
+        private byte[] _issuerKey;
+        private byte[] _consumerKey;
 
-        public byte[] GetKey(SigningAlgorithm algorithm)
+        public byte[] GetIssuerKey(SigningAlgorithm algorithm)
         {
-            return _key;
+            return _issuerKey;
+        }
+
+        public byte[] GetConsumerKey(SigningAlgorithm algorithm, string issuer)
+        {
+            return _consumerKey;
+        }
+
+        public byte[] IssuerKey
+        {
+            get { return _issuerKey; }
+            set { _issuerKey = value; }
+        }
+
+        public byte[] ConsumerKey
+        {
+            get { return _consumerKey; }
+            set { _consumerKey = value; }
         }
     }
 

@@ -57,7 +57,7 @@ namespace Jwt4Net.Signing
                 case SigningAlgorithm.HS256:
                 case SigningAlgorithm.HS384:
                 case SigningAlgorithm.HS512:
-                    throw new NotImplementedException();
+                    return new HmacSigning(_keyProvider, header.Algorithm);
                 case SigningAlgorithm.RS256:
                 case SigningAlgorithm.RS384:
                 case SigningAlgorithm.RS512:

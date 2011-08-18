@@ -44,19 +44,30 @@ namespace Jwt4Net.Issuer
             w.WriteObjectEnd();
 
             var key = _config.Key;
-            var headerSegment = new JsonWebTokenHeader
-                                    {
-                                        Algorithm = key.Algorithm,
-                                        KeyUri = new Uri(key.RemoteUri),
-                                        KeyId = key.RemoteId,
-                                        KeyFormat = key.KeyFormat
-                                    }.ToJson().Base64UrlEncode();
+            string headerSegment = GetHeaderSegment(key);
             var claimSegment = w.ToString().Base64UrlEncode();
 
             var signer = _cryptoProvider.GetSigner();
             var signature = signer.GetSignature(headerSegment+"."+claimSegment);
 
             return headerSegment + "." + claimSegment + "." + signature.Base64UrlEncode();
+        }
+
+        private static string GetHeaderSegment(IKeyConfig key)
+        {
+            if(key.Algorithm.IsHmac())
+                return new JsonWebTokenHeader
+                           {
+                               Algorithm = key.Algorithm
+                           }.ToJson().Base64UrlEncode();
+
+            return new JsonWebTokenHeader
+                       {
+                           Algorithm = key.Algorithm,
+                           KeyUri = new Uri(key.RemoteUri),
+                           KeyId = key.RemoteId,
+                           KeyFormat = key.KeyFormat
+                       }.ToJson().Base64UrlEncode();
         }
 
         public ITokenIssuer Create()

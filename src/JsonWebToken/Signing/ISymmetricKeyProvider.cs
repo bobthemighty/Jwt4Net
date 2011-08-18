@@ -1,24 +1,35 @@
-﻿using Jwt4Net.Configuration;
+﻿using System.Linq;
+using Jwt4Net.Configuration;
 
 namespace Jwt4Net.Signing
 {
     public interface ISymmetricKeyProvider
     {
-        byte[] GetKey(SigningAlgorithm algorithm);
+        byte[] GetIssuerKey(SigningAlgorithm algorithm);
+        byte[] GetConsumerKey(SigningAlgorithm algorithm, string issuer);
     }
 
     public class ConfigFileSymmetricKeyProvider : ISymmetricKeyProvider
     {
-        private readonly IKeyConfig _config;
+        private readonly IKeyConfig _issuer;
+        private readonly IConsumerConfig _consumer;
 
-        public ConfigFileSymmetricKeyProvider(IKeyConfig config)
+        public ConfigFileSymmetricKeyProvider(IKeyConfig issuer, IConsumerConfig consumer)
         {
-            _config = config;
+            _issuer = issuer;
+            _consumer = consumer;
         }
 
-        public byte[] GetKey(SigningAlgorithm algorithm)
+        public byte[] GetIssuerKey(SigningAlgorithm algorithm)
         {
-            return _config.KeyValue;
+            return _issuer.KeyValue;
+        }
+
+        public byte[] GetConsumerKey(SigningAlgorithm algorithm, string issuer)
+        {
+            return (from trustedIssuer in _consumer.TrustedIssuers
+                    where trustedIssuer.Name == issuer
+                    select trustedIssuer.SharedSecret.Base64UrlDecode()).FirstOrDefault();
         }
     }
 }

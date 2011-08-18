@@ -22,7 +22,7 @@ namespace Jwt4Net.Signing
         {
             CngKey key;
             var options = _keyConfig.IsUserKey ? CngKeyOpenOptions.UserKey : CngKeyOpenOptions.MachineKey;
-            if (!CngKey.Exists(_keyConfig.LocalName, CngProvider.MicrosoftSoftwareKeyStorageProvider, options))
+            if (!CngKey.Exists(_keyConfig.LocalName, CngProvider.MicrosoftSoftwareKeyStorageProvider, CngKeyOpenOptions.MachineKey))
                 throw new ConfigurationErrorsException("No " + options + " could be found for the id " + _keyConfig.LocalName);
 
             key = CngKey.Open(_keyConfig.LocalName, CngProvider.MicrosoftSoftwareKeyStorageProvider, options);
