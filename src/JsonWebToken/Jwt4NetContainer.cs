@@ -1,17 +1,14 @@
 ﻿using System;
 using Jwt4Net.Configuration;
 using Jwt4Net.Configuration.Fluent;
+using Jwt4Net.Consumer.Validation;
 using Microsoft.Practices.ServiceLocation;
+using TinyIoC;
 
 namespace Jwt4Net
 {
     public static class Jwt4NetContainer
     {
-        static Jwt4NetContainer()
-        {
-            Configure();
-        }
-           
         public static ITokenIssuer CreateIssuer()
         {
             return ServiceLocator.Current.GetInstance<ITokenIssuer>();
@@ -27,25 +24,27 @@ namespace Jwt4Net
             ServiceLocator.SetLocatorProvider(config.Configure());
         }
 
-        public static void Configure()
+        public static void Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig consumerConfig = null)
         {
-            Configure(new DefaultContainerConfig());
-        }
-
-        public static void Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig trustSymmetricIssuer = null)
-        {
-            Configure();
-            var c = TinyIoC.TinyIoCContainer.Current;
+            var c = new TinyIoCContainer();
+            var cfg = new DefaultContainerConfig(c);
+           
             if (null != withSymmetricKey)
             {
                 c.Register<IIssuerConfig>(withSymmetricKey);
                 c.Register(withSymmetricKey.Key);
             }
 
-            if(null != trustSymmetricIssuer)
+            if(null != consumerConfig)
             {
-                c.Register<IConsumerConfig>(trustSymmetricIssuer);
+                c.Register<IConsumerConfig>(consumerConfig);
+                foreach(var rule in consumerConfig.IgnoredRules)
+                {
+                    c.RemoveRegistration(new TinyIoCContainer.TypeRegistration(typeof(ITokenValidationRule), rule.FullName));
+                }
             }
+
+            ServiceLocator.SetLocatorProvider(() =>cfg);
         }
     }
 }

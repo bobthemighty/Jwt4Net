@@ -2685,7 +2685,7 @@ namespace TinyIoC
             return new RegisterOptions(this, typeRegistration);
         }
 
-        private void RemoveRegistration(TypeRegistration typeRegistration)
+        public void RemoveRegistration(TypeRegistration typeRegistration)
         {
             _RegisteredTypes.Remove(typeRegistration);
         }
@@ -3126,6 +3126,8 @@ namespace TinyIoC
                 disposed = true;
 
                 _RegisteredTypes.Dispose();
+                _RegisteredTypes.Clear();
+                RegisterDefaultTypes();
 
                 GC.SuppressFinalize(this);
             }

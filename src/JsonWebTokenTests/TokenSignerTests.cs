@@ -1,10 +1,6 @@
-﻿using System;
-using Jwt4Net;
-using Jwt4Net.Configuration;
-using Jwt4Net.Issuer;
+﻿using Jwt4Net;
+using Jwt4Net.Configuration.Fluent;
 using Jwt4Net.Signing;
-using Machine.Specifications;
-using Microsoft.Practices.ServiceLocation;
 
 namespace JsonWebTokenTests
 {
@@ -12,7 +8,7 @@ namespace JsonWebTokenTests
     {
         static Context()
         {
-           Jwt4NetContainer.Configure();
+            Jwt4NetContainer.Configure(With.Default);
         }
     }
 
