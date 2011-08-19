@@ -8,6 +8,6 @@
         string RemoteId { get; }
         string RemoteUri { get; }
         bool IsUserKey { get; }
-        byte[] KeyValue { get; }
+        string KeyValue { get; }
     }
 }

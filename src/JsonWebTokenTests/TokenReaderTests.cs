@@ -33,7 +33,8 @@ namespace JsonWebTokenTests
         Establish context = () =>
         {
             Jwt4NetContainer.Configure();
-            TinyIoCContainer.Current.Register<IConsumerConfig>(new FakeConsumerConfig() { AllowUnsignedTokens = true });
+            TinyIoCContainer.Current.Register<IConsumerConfig>(new FakeConsumerConfig() { 
+                AllowUnsignedTokens = true});
 
             Consumer = Jwt4NetContainer.CreateConsumer();
             DateString = new UnixTimeStamp(DateTime.UtcNow.AddHours(1)).Value.ToString();
@@ -41,7 +42,8 @@ namespace JsonWebTokenTests
 
         Because token_is_read = () => Success = Consumer.TryConsume("{'iss': 'http://login.example.com', 'exp': " + DateString + "}", out The_Token);
 
-        It should_fail = () => Success.ShouldBeTrue();
+        It should_fail = () => 
+            Success.ShouldBeTrue();
 
         private static ITokenConsumer Consumer;
         private static JsonWebToken The_Token;

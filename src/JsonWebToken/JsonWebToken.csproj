@@ -59,6 +59,8 @@
     <Compile Include="Claims\UnixTimeStamp.cs" />
     <Compile Include="Configuration\DefaultContainerConfig.cs" />
     <Compile Include="Configuration\DefaultJwt4NetConfig.cs" />
+    <Compile Include="Configuration\Fluent\As.cs" />
+    <Compile Include="Configuration\Fluent\FluentIssuerConfig.cs" />
     <Compile Include="Configuration\IIssuerConfig.cs" />
     <Compile Include="Configuration\IKeyConfig.cs" />
     <Compile Include="Configuration\IConsumerConfig.cs" />

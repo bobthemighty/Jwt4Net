@@ -327,7 +327,7 @@ public class FakeRsaKeyRepository :ICngKeyProvider, IRsaPublicKeyProvider
             public string RemoteId { get; set; }
             public string RemoteUri { get; set; }
             public bool IsUserKey { get; set; }
-            public byte[] KeyValue { get; set; }
+            public string KeyValue { get; set; }
         }
     
 }

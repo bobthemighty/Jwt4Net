@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Jwt4Net.Configuration;
 
 namespace Jwt4Net.Signing
@@ -22,14 +23,14 @@ namespace Jwt4Net.Signing
 
         public byte[] GetIssuerKey(SigningAlgorithm algorithm)
         {
-            return _issuer.KeyValue;
+            return Convert.FromBase64String(_issuer.KeyValue);
         }
 
         public byte[] GetConsumerKey(SigningAlgorithm algorithm, string issuer)
         {
             return (from trustedIssuer in _consumer.TrustedIssuers
                     where trustedIssuer.Name == issuer
-                    select trustedIssuer.SharedSecret.Base64UrlDecode()).FirstOrDefault();
+                    select Convert.FromBase64String(trustedIssuer.SharedSecret)).FirstOrDefault();
         }
     }
 }

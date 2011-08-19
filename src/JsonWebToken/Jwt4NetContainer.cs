@@ -1,4 +1,6 @@
-﻿using Jwt4Net.Configuration;
+﻿using System;
+using Jwt4Net.Configuration;
+using Jwt4Net.Configuration.Fluent;
 using Microsoft.Practices.ServiceLocation;
 
 namespace Jwt4Net
@@ -28,6 +30,22 @@ namespace Jwt4Net
         public static void Configure()
         {
             Configure(new DefaultContainerConfig());
+        }
+
+        public static void Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig trustSymmetricIssuer = null)
+        {
+            Configure();
+            var c = TinyIoC.TinyIoCContainer.Current;
+            if (null != withSymmetricKey)
+            {
+                c.Register<IIssuerConfig>(withSymmetricKey);
+                c.Register(withSymmetricKey.Key);
+            }
+
+            if(null != trustSymmetricIssuer)
+            {
+                c.Register<IConsumerConfig>(trustSymmetricIssuer);
+            }
         }
     }
 }

@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base64EncoderTests.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="EccTests.cs" />
     <Compile Include="HmacTests.cs" />
     <Compile Include="RsaShaTests.cs" />

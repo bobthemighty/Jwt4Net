@@ -111,7 +111,8 @@ namespace Jwt4Net.Configuration
                     return (string)this["keyUriPattern"];
                 }
             }
-
+            
+            [ConfigurationProperty("keyValue", DefaultValue = "", IsRequired = false)]
             public string SharedSecret
             {
                 get { return (string) this["keyValue"]; }
@@ -120,7 +121,7 @@ namespace Jwt4Net.Configuration
 
         public class KeyConfig : ConfigurationElement, IKeyConfig
         {
-            [ConfigurationProperty("localName", IsRequired = true)]
+            [ConfigurationProperty("localName", IsRequired = false)]
             public string LocalName
             {
                 get
@@ -136,7 +137,7 @@ namespace Jwt4Net.Configuration
                 { return (string)this["remoteId"]; }
             }
 
-            [ConfigurationProperty("remoteUri", IsRequired = true)]
+            [ConfigurationProperty("remoteUri", IsRequired = false)]
             public string RemoteUri
             {
                 get
@@ -151,13 +152,13 @@ namespace Jwt4Net.Configuration
                 get { return (bool)this["isUserKey"]; }
             }
 
-            [ConfigurationProperty("keyValue", DefaultValue = new byte[0], IsRequired = false)]
-            public byte[] KeyValue
+            [ConfigurationProperty("keyValue", DefaultValue = "", IsRequired = false)]
+            public string KeyValue
             {
-                get { return ((string)this["KeyValue"]).Base64UrlDecode(); }
+                get { return ((string)this["keyValue"]); }
             }
 
-            [ConfigurationProperty("format", IsRequired = true)]
+            [ConfigurationProperty("format", IsRequired = false)]
             public KeyFormat KeyFormat
             {
                 get
