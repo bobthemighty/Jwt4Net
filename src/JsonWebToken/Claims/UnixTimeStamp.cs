@@ -58,5 +58,15 @@ namespace Jwt4Net.Claims
         {
             return !left.Equals(right);
         }
+
+        public static implicit operator UnixTimeStamp(DateTime dateTime)
+        {
+            return new UnixTimeStamp(dateTime);
+        }
+
+        public static implicit operator DateTime(UnixTimeStamp timeStamp)
+        {
+            return timeStamp.ToDateTime();
+        }
     }
 }
