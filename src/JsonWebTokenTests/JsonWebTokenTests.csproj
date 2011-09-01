@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base64EncoderTests.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="ConfigurationTests.cs" />
     <Compile Include="EccTests.cs" />
     <Compile Include="HmacTests.cs" />
     <Compile Include="RsaShaTests.cs" />
@@ -71,6 +71,9 @@
       <Project>{20E4D6B1-8F93-460D-9B95-1FAA9970F434}</Project>
       <Name>JsonWebToken</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,6 +2,7 @@
 using Jwt4Net;
 using Jwt4Net.Claims;
 using Jwt4Net.Configuration;
+using Jwt4Net.Configuration.Fluent;
 using Machine.Specifications;
 using TinyIoC;
 
@@ -11,7 +12,7 @@ namespace JsonWebTokenTests
     {
         Establish context = () =>
             {
-                Jwt4NetContainer.Configure();
+                Jwt4NetContainer.Configure(With.Default);
                 TinyIoCContainer.Current.Register<IConsumerConfig>(new FakeConsumerConfig(){ AllowUnsignedTokens = true});
 
                 Consumer = Jwt4NetContainer.CreateConsumer();
@@ -32,7 +33,7 @@ namespace JsonWebTokenTests
     {
         Establish context = () =>
         {
-            Jwt4NetContainer.Configure();
+            Jwt4NetContainer.Configure(With.Default);
             TinyIoCContainer.Current.Register<IConsumerConfig>(new FakeConsumerConfig() { 
                 AllowUnsignedTokens = true});
 

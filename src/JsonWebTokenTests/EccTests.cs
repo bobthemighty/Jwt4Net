@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Jwt4Net;
 using Jwt4Net.Claims;
 using Jwt4Net.Configuration;
+using Jwt4Net.Configuration.Fluent;
 using Jwt4Net.Consumer.Signing;
 using Jwt4Net.Consumer.Validation;
 using Jwt4Net.Signing;
@@ -19,7 +20,7 @@ namespace JsonWebTokenTests
         private Establish context = () =>
                                 {
                                     // use a single well-known key for both encoding and decoding
-                                    Jwt4NetContainer.Configure();
+                                    Jwt4NetContainer.Configure(With.Default);
                                     TinyIoCContainer.Current.Register(typeof(IIssuerConfig), issuerConfig);
                                     TinyIoCContainer.Current.Register(typeof(IKeyConfig), issuerConfig.Key);
                                     TinyIoCContainer.Current.Register(typeof(IConsumerConfig), new FakeConsumerConfig());

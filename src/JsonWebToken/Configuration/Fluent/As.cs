@@ -19,7 +19,7 @@ namespace Jwt4Net.Configuration.Fluent
     public class FluentConsumerConfig : IConsumerConfig
     {
         private List<IIssuer> _issuers = new List<IIssuer>();
-
+        private List<Type> _ignoredRules = new List<Type>();
         public FluentConsumerConfig TrustUnsignedTokens()
         {
             AllowUnsignedTokens = true;
@@ -41,6 +41,17 @@ namespace Jwt4Net.Configuration.Fluent
                                  SharedSecret = badgerBadgerBadger
                              });
             return this;
+        }
+
+        public FluentConsumerConfig IgnoringRule<T>()
+        {
+            _ignoredRules.Add(typeof(T));
+            return this;
+        }
+
+        public IEnumerable<Type> IgnoredRules
+        {
+            get { return _ignoredRules; }
         }
     }
 
