@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
 using NDesk.Options;
 using System.Security.Cryptography;
 using System.Configuration;
 using System.IO;
+using Penge;
 using Security.Cryptography;
+using Security.Cryptography.X509Certificates;
 
 namespace GenerateKey
 {
@@ -42,43 +45,39 @@ namespace GenerateKey
         private static void WriteKey()
         {
             WritePublicKey();
+            WritePrivateKey();
             Console.WriteLine("Unique name: "+Key.UniqueName);
             Console.WriteLine(new ECDsaCng(Key).ToXmlString(ECKeyXmlFormat.Rfc4050));
         }
 
         private static void WritePublicKey()
         {
-            using(var fs = File.OpenWrite(Options.KeyName+".xml"))
-            using (var sw = new StreamWriter(fs))
+            using(var fs = File.OpenWrite(Options.KeyName+".pem"))
+            using(var writer = new PemWriter(fs))
             {
-                sw.Write(new ECDsaCng(Key).ToXmlString(ECKeyXmlFormat.Rfc4050));
+                writer.WritePublicKey(Key);
             }
         }
 
         private static void WritePrivateKey()
         {
-            var salt = Convert.FromBase64String(ConfigurationManager.AppSettings["salt"]);
-            var pwBytes = new PasswordDeriveBytes(Options.Password, salt);
-            var keyBytes = Key.Export(CngKeyBlobFormat.EccPrivateBlob);
+            if (false == Options.ExportPrivateKey)
+                return;
 
-            var encryptor = new AesManaged();
-            
-            encryptor.Key = pwBytes.GetBytes(encryptor.KeySize/8);
-            encryptor.IV = pwBytes.GetBytes(encryptor.BlockSize/8);
+            var creationParams =
+                         new X509CertificateCreationParameters(new X500DistinguishedName("CN="+Key.KeyName))
+                             {
+                                 CertificateCreationOptions = X509CertificateCreationOptions.None,
+                                 SignatureAlgorithm = X509CertificateSignatureAlgorithm.ECDsaSha512,
+                                 TakeOwnershipOfKey = false
+                             };
 
-            string encryptedData;
-            using (var ms = new MemoryStream())
-            using(var cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+            var cert = Key.CreateSelfSignedCertificate(creationParams);
+            var pfx = cert.Export(X509ContentType.Pfx, Options.Password);
+
+            using(var fs  = File.OpenWrite(Options.KeyName+".key.pfx"))
             {
-                cs.Write(keyBytes, 0, keyBytes.Length);
-                cs.FlushFinalBlock();
-                encryptedData = Convert.ToBase64String(ms.ToArray());
-            }
-
-            using (var fs = File.OpenWrite(Options.KeyName + ".key"))
-            using(var sw = new StreamWriter(fs))
-            {
-                sw.Write(encryptedData);
+                fs.Write(pfx, 0, pfx.Length);
             }
         }
 
@@ -99,6 +98,8 @@ namespace GenerateKey
                 {"n|name=", "The name this key will be persisted with.", v => Options.KeyName = v},
                 {"ks|keysize=", "The size of the generated key in bits. \n Must be one of 256, 384, 521. Defaults to 256", (int v) => Options.KeySize = v},
                 {"ga|grantaccess=", "A comma-delimited list of users who need read-access to the generated key.", v => Options.GrantAccess = v.Split(',').Select(s => s.Trim())},
+                {"e|export-private", "If present, this flag causes the program to export the public/private key pair as a PFX", v => Options.ExportPrivateKey = true},
+                {"pw|password=", "A password for protecting private key information, should only be used with the export-private flag", v => Options.Password = v}
             };
             try
             {
