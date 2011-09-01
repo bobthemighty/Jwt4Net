@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GenerateKey
 {
@@ -15,5 +16,7 @@ namespace GenerateKey
         public string Password { get; set; }
 
         public IEnumerable<string> GrantAccess { get; set; }
+
+        public bool ExportPrivateKey { get; set; }
     }
 }
