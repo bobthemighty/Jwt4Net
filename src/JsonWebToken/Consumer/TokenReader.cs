@@ -39,7 +39,8 @@ namespace Jwt4Net
             {
                 Signature = parts[2].Base64UrlDecode(),
                 Header = new JsonWebTokenHeader(parts[0]),
-                Claims = new JsonClaimSet(parts[1])
+                Claims = new JsonClaimSet(parts[1]),
+                OriginalString = token
             };
         }
 
@@ -49,10 +50,11 @@ namespace Jwt4Net
                 return new JsonWebToken
                            {
                                Header = new JsonWebTokenHeader(ReadPart(tokenParts[0])),
-                               Claims = new JsonClaimSet(ReadPart(tokenParts[1]))
+                               Claims = new JsonClaimSet(ReadPart(tokenParts[1])),
+                               OriginalString = string.Join(".", tokenParts)
                            };
 
-            return new JsonWebToken { Claims = new JsonClaimSet(ReadPart(tokenParts[0])) };
+            return new JsonWebToken {Claims = new JsonClaimSet(ReadPart(tokenParts[0])), OriginalString = tokenParts[0]};
         }
 
         private static string ReadPart(string part)

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Jwt4Net.Signing;
 
 namespace Jwt4Net
@@ -26,6 +27,8 @@ namespace Jwt4Net
                 return Encoding.UTF8.GetBytes(Header.OriginalString + "." + Claims.OriginalString);
             }
         }
+
+        public string OriginalString { get; internal set; }
 
         public string ToCompact()
         {
