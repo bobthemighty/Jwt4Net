@@ -18,25 +18,31 @@ namespace KeyTool
                 return 1;
             }
 
-            if(false == CngKey.Exists(Name, CngProvider.MicrosoftSoftwareKeyStorageProvider, CngKeyOpenOptions.MachineKey|CngKeyOpenOptions.UserKey))
-            {
-                Console.WriteLine("Key "+Name+" not found");
-                return 2;
-            }
-
+            CngKey key;
+            var finder = new KeyFinder();
             try
             {
-                using(var k = CngKey.Open(Name, CngProvider.MicrosoftSoftwareKeyStorageProvider, CngKeyOpenOptions.MachineKey|CngKeyOpenOptions.UserKey))
+                if (finder.Find(Name, out key))
                 {
-                    k.Delete();
+                    key.Delete();
+                    Console.WriteLine("Key " + Name + " deleted successfully");
                 }
-                Console.WriteLine("Key "+Name+" deleted successfully");
+
+                else
+                {
+                    return 2;
+                }
+
                 return 0;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 return 3;
+            }
+            finally
+            {
+                finder.Dispose();
             }
         }
 
@@ -59,10 +65,12 @@ namespace KeyTool
         {
             _opts = new OptionSet
                         {
-                            {"n|name=", "The name of the key to delete", v => Name = v}
+                            {"n=|name=", "The name or unique id of the key to delete. You may provide a partial match.", v => Name = v},
                         };
 
             _opts.Parse(args);
+            if(Name == null && args.Length == 2)
+            Name = args[1];
             return this;
         }
 

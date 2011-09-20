@@ -57,6 +57,7 @@
     <Compile Include="ImportPfx.cs" />
     <Compile Include="KeyCommand.cs" />
     <Compile Include="KeyExists.cs" />
+    <Compile Include="KeyFinder.cs" />
     <Compile Include="KeyOptionSet.cs" />
     <Compile Include="KeyType.cs" />
     <Compile Include="ListKeys.cs" />

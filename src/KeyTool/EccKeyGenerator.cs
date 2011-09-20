@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
 
 namespace GenerateKey
@@ -24,7 +21,7 @@ namespace GenerateKey
                        {
                            ExportPolicy = CngExportPolicies.AllowPlaintextExport,
                            KeyCreationOptions = CngKeyCreationOptions.OverwriteExistingKey | CngKeyCreationOptions.MachineKey,
-                           KeyUsage = CngKeyUsages.Signing
+                           KeyUsage = CngKeyUsages.Signing | CngKeyUsages.None
             };
         }
 

@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using NDesk.Options;
-using Security.Cryptography;
 
 namespace KeyTool
 {
@@ -23,8 +21,28 @@ namespace KeyTool
 
             try
             {
-                if (Find())
-                    return 0;
+                CngKey key;
+                var finder = new KeyFinder();
+                if(string.IsNullOrEmpty(Options.Anything))
+                {
+                    if (finder.Find(Options.Name, Options.UniqueId, out key))
+                    {
+                        Console.WriteLine("Found key " + Options.Name ?? Options.UniqueId);
+                        Console.WriteLine("\t algorithm: " + key.Algorithm);
+                        Console.WriteLine("\t keysize: " + key.KeySize);
+                        Console.WriteLine("\t usages: " + key.KeyUsage);
+                        Console.WriteLine("\t uniquename: " + key.UniqueName);
+                    }
+                }
+                else if (finder.Find(Options.Anything, out key))
+                {
+                    Console.WriteLine("Found key " + Options.Name ?? Options.UniqueId);
+                    Console.WriteLine("\t algorithm: " + key.Algorithm);
+                    Console.WriteLine("\t keysize: " + key.KeySize);
+                    Console.WriteLine("\t usages: " + key.KeyUsage);
+                    Console.WriteLine("\t uniquename: " + key.UniqueName);
+                }
+                
                 return 2;
             }
             catch (Exception e)
@@ -33,51 +51,6 @@ namespace KeyTool
                 return 3;
             }
         }
-
-        private bool Find()
-        {
-            Func<CngKey, bool> finder;
-            if (string.IsNullOrEmpty(Options.Name))
-            {
-                finder = k => k.UniqueName.ToUpper().Contains(Options.UniqueId.ToUpper());
-            }
-            else
-            {
-                finder = k => k.KeyName.ToUpper().Contains(Options.Name);
-            }
-
-            var keys = CngProvider.MicrosoftSoftwareKeyStorageProvider.GetKeys().Where(finder);
-            if (keys.Count() == 0)
-            {
-                Console.WriteLine("No match");
-                return false;
-            }
-
-            if (keys.Count() == 1)
-            {
-                var k = keys.First();
-                    Console.WriteLine("Found key " + Options.Name ?? Options.UniqueId);
-                    Console.WriteLine("\t algorithm: " + k.Algorithm);
-                    Console.WriteLine("\t keysize: " + k.KeySize);
-                    Console.WriteLine("\t usages: " + k.KeyUsage);
-                    Console.WriteLine("\t uniquename: " + k.UniqueName);
-              
-                return true;
-            }
-
-            Console.WriteLine("Ambiguous match:");
-            Console.WriteLine("Did you mean one of the following?");
-            foreach(var k in keys)
-            {
-                Console.WriteLine(k.KeyName);
-                Console.WriteLine("\tUnique name: "+k.UniqueName);
-                Console.WriteLine("\tAlgorithm: "+k.Algorithm);
-                Console.WriteLine("\tKeysize: "+k.KeySize);
-            }
-
-            return false;
-        }
-
         public void WriteHelp(TextWriter stream)
         {
             Console.WriteLine();
@@ -110,6 +83,12 @@ namespace KeyTool
            
             _opts.Parse(args);
             Valid = (false == string.IsNullOrEmpty(Name) || false == string.IsNullOrEmpty(UniqueId));
+            if (false == Valid && args.Length > 1)
+            {
+                Anything = args[1];
+                Valid = true;
+            }
+
         }
 
         public FindOptions()
@@ -138,6 +117,8 @@ namespace KeyTool
         public CngProvider Provider { get; set; }
 
         public string UniqueId { get; set; }
+
+        public string Anything { get; set; }
 
         public void Write(TextWriter stream)
         {
