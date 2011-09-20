@@ -55,6 +55,11 @@ namespace KeyTool
             store.Close();
 
             GrantAccess(privateKey);
+            Console.WriteLine("Imported key successfully");
+            Console.WriteLine("\t algorithm: " + privateKey.Algorithm);
+            Console.WriteLine("\t keysize: " + privateKey.KeySize);
+            Console.WriteLine("\t usages: " + privateKey.KeyUsage);
+            Console.WriteLine("\t uniquename: " + privateKey.UniqueName);
             return 0;
         }
 
