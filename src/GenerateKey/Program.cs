@@ -73,7 +73,11 @@ namespace GenerateKey
                              };
 
             var cert = Key.CreateSelfSignedCertificate(creationParams);
-            var pfx = cert.Export(X509ContentType.Pfx, Options.Password);
+            byte[] pfx;
+            if (string.IsNullOrEmpty(Options.Password))
+                pfx = cert.Export(X509ContentType.Pfx);
+            else
+                pfx = cert.Export(X509ContentType.Pfx, Options.Password);
 
             using(var fs  = File.OpenWrite(Options.KeyName+".key.pfx"))
             {

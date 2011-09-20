@@ -29,7 +29,8 @@ namespace GenerateKey
             return new CngKeyCreationParameters
                        {
                            ExportPolicy = CngExportPolicies.AllowPlaintextExport,
-                           KeyCreationOptions = CngKeyCreationOptions.OverwriteExistingKey | CngKeyCreationOptions.MachineKey
+                           KeyCreationOptions = CngKeyCreationOptions.OverwriteExistingKey | CngKeyCreationOptions.MachineKey,
+                           KeyUsage = CngKeyUsages.Signing
             };
         }
 
