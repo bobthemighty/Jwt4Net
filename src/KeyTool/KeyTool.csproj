@@ -59,6 +59,7 @@
     <Compile Include="KeyExists.cs" />
     <Compile Include="KeyOptionSet.cs" />
     <Compile Include="KeyType.cs" />
+    <Compile Include="ListKeys.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
