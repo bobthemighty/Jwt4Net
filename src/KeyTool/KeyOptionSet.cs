@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GenerateKey
 {
@@ -21,6 +21,11 @@ namespace GenerateKey
 
         public bool DoNotPersist { get; set; }
 
-        public bool Valid { get; set; }
+        public bool Valid { get
+        {
+            return (false == string.IsNullOrEmpty(KeyName)
+                          && new[] { 256, 384, 521 }.Contains(KeySize));
+        }
+        }
     }
 }

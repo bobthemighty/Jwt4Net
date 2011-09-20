@@ -53,6 +53,8 @@ namespace KeyTool
 
         public void WriteHelp(TextWriter stream)
         {
+            Console.WriteLine();
+            Console.WriteLine("Usage:");
             new FindOptions().Write(stream);
             stream.WriteLine("Return codes:");
             stream.WriteLine("\t0: key located");
@@ -80,6 +82,8 @@ namespace KeyTool
         {
            
             _opts.Parse(args);
+            if (null == Name && args.Length == 2)
+                Name = args[1];
             Valid = (false == string.IsNullOrEmpty(Name));
         }
 

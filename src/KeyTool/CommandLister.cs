@@ -29,9 +29,9 @@ namespace KeyTool
         {
             Type commandBaseType = typeof(KeyCommand);
             var types = GetType().Assembly.GetTypes().Where(t => commandBaseType.IsAssignableFrom(t) && t != commandBaseType);
-            Console.WriteLine("Key tool: manage keys for Jwt4Net");
+            Console.WriteLine("\nKey tool: manage keys for Jwt4Net");
             Console.WriteLine("\tUsage keyTool.exe commandName [args]");
-            Console.WriteLine("for help use keytool help commandName");
+            Console.WriteLine("\n\tfor help use keytool help commandName\n");
             Console.WriteLine("\tAvailable commands:\n");
 
             foreach (var t in types)

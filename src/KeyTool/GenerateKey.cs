@@ -122,6 +122,8 @@ namespace KeyTool
 
         public void WriteHelp(TextWriter stream)
         {
+            Console.WriteLine();
+            Console.WriteLine("Usage:");
             _optionSet.WriteOptionDescriptions(Console.Out);
             stream.WriteLine("Return codes:");
             stream.WriteLine("\t0: success");

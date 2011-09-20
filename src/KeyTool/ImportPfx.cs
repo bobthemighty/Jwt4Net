@@ -35,6 +35,7 @@ namespace KeyTool
             if (false == File.Exists(Path))
             {
                 Console.WriteLine("The file " + Path + " could not be located");
+                WriteHelp(Console.Error);
                 return 1;
             }
             var cert = new X509Certificate2();
@@ -59,6 +60,8 @@ namespace KeyTool
 
         public void WriteHelp(TextWriter stream)
         {
+            Console.WriteLine();
+            Console.WriteLine("Usage:");
             _opts.WriteOptionDescriptions(stream);
         }
 

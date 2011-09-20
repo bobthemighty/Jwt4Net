@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,8 +50,10 @@
     <Compile Include="CommandBuilder.cs" />
     <Compile Include="CommandLister.cs" />
     <Compile Include="CommandAttribute.cs" />
+    <Compile Include="DeleteKey.cs" />
     <Compile Include="EccKeyGenerator.cs" />
     <Compile Include="GenerateKey.cs" />
+    <Compile Include="GrantAccess.cs" />
     <Compile Include="ImportPfx.cs" />
     <Compile Include="KeyCommand.cs" />
     <Compile Include="KeyExists.cs" />
