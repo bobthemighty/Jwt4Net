@@ -46,8 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandBuilder.cs" />
+    <Compile Include="CommandLister.cs" />
+    <Compile Include="CommandNameAttribute.cs" />
     <Compile Include="EccKeyGenerator.cs" />
     <Compile Include="GenerateKey.cs" />
+    <Compile Include="KeyCommand.cs" />
     <Compile Include="KeyOptionSet.cs" />
     <Compile Include="KeyType.cs" />
     <Compile Include="Options.cs" />

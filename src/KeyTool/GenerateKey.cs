@@ -12,6 +12,7 @@ using Security.Cryptography.X509Certificates;
 
 namespace KeyTool
 {
+    [CommandName("gen")]
     internal class GenerateKey : KeyCommand
     {
         private readonly string[] _args;
@@ -26,12 +27,6 @@ namespace KeyTool
                                                {"pw|password=", "A password for protecting private key information, should only be used with the export-private flag", v => Options.Password = v},
                                                {"np|no-persistence", "Do not persist the key on this machine. Useful for generating keys for other environments", v=> Options.DoNotPersist = true}
                                            };
-
-        public GenerateKey(string[] args)
-        {
-            _args = args;
-        }
-
         private void DeleteKey()
         {
             if(Options.DoNotPersist)
@@ -107,31 +102,12 @@ namespace KeyTool
                 Key = CngKey.Create(CngAlgorithm2.Rsa, Options.KeyName);
         }
 
-        private bool GetArgs(string[] args)
-        {
-            Options = new KeyOptionSet();
-           
-            var p = _optionSet;
-            try
-            {
-                p.Parse(args);
-            }
-            catch (OptionException e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-            var success = (false == string.IsNullOrEmpty(Options.KeyName)
-                           && new[] {256, 384, 521}.Contains(Options.KeySize));
-            return success;
-        }
-
-        public static System.Security.Cryptography.CngKey Key { get; set; }
+        public static CngKey Key { get; set; }
     
 
         public int Execute()
         {
-            if (GetArgs(_args))
+            if(Options.Valid)
             {
                 Build();
                 GrantAccess();
@@ -152,6 +128,26 @@ namespace KeyTool
         public void WriteHelp(TextWriter stream)
         {
             _optionSet.WriteOptionDescriptions(Console.Out);
+            stream.WriteLine("Return codes:");
+            stream.WriteLine("\t0: success");
+            stream.WriteLine("\t1: argument error");
+        }
+
+        public KeyCommand FromArgs(string[] args)
+        {
+            Options = new KeyOptionSet();
+
+            var p = _optionSet;
+            try
+            {
+                p.Parse(args);
+            }
+            catch (OptionException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return this;
         }
     }
 }

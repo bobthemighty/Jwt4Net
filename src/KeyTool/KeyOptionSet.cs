@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GenerateKey
 {
@@ -19,5 +20,7 @@ namespace GenerateKey
         public bool ExportPrivateKey { get; set; }
 
         public bool DoNotPersist { get; set; }
+
+        public bool Valid { get; set; }
     }
 }
