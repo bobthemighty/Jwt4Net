@@ -51,6 +51,7 @@
     <Compile Include="CommandAttribute.cs" />
     <Compile Include="EccKeyGenerator.cs" />
     <Compile Include="GenerateKey.cs" />
+    <Compile Include="ImportPfx.cs" />
     <Compile Include="KeyCommand.cs" />
     <Compile Include="KeyExists.cs" />
     <Compile Include="KeyOptionSet.cs" />

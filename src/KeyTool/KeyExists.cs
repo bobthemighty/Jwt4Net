@@ -19,10 +19,18 @@ namespace KeyTool
                 return 1;
             }
 
-            if (Find())
-                return 0;
-            Console.WriteLine("No key found");
-            return 2;
+            try
+            {
+                if (Find())
+                    return 0;
+                Console.WriteLine("No key found");
+                return 2;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 3;
+            }
         }
 
         private bool Find()
@@ -46,6 +54,11 @@ namespace KeyTool
         public void WriteHelp(TextWriter stream)
         {
             new FindOptions().Write(stream);
+            stream.WriteLine("Return codes:");
+            stream.WriteLine("\t0: key located");
+            stream.WriteLine("\t1: argument error");
+            stream.WriteLine("\t2: key not found");
+            stream.WriteLine("\t3: exception while opening key");
         }
 
         public KeyCommand FromArgs(string[] args)
@@ -59,8 +72,7 @@ namespace KeyTool
     {
         private OptionSet _opts;
         private CngKeyOpenOptions _keyOpenOptions;
-
-
+        
         public string Name { get; private set; }
 
         public FindOptions(string[] args)
