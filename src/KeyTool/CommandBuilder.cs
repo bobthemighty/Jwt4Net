@@ -10,7 +10,7 @@ namespace KeyTool
             var cmds = from t in GetType().Assembly.GetTypes().Where(typeof (KeyCommand).IsAssignableFrom) select t;
             var commandType =
                 from c in cmds
-                let att =c.GetCustomAttributes(typeof (CommandNameAttribute), false).FirstOrDefault() as CommandNameAttribute
+                let att =c.GetCustomAttributes(typeof (CommandAttribute), false).FirstOrDefault() as CommandAttribute
                 let names = (null == att) ? new string[0] : att.Names
                 where names.Contains(commandName)
                 select c;

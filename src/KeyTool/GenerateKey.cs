@@ -12,7 +12,7 @@ using Security.Cryptography.X509Certificates;
 
 namespace KeyTool
 {
-    [CommandName("gen")]
+    [Command("create a new key for use with jwt4net", "gen", "create")]
     internal class GenerateKey : KeyCommand
     {
         private readonly string[] _args;
@@ -118,11 +118,6 @@ namespace KeyTool
             }
             WriteHelp(Console.Out);
             return 1;
-        }
-
-        public void WriteDescription(TextWriter stream)
-        {
-            stream.WriteLine("\tgen - create a new key for use with jwt4net");
         }
 
         public void WriteHelp(TextWriter stream)

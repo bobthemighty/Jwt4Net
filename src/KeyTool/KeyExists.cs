@@ -21,17 +21,18 @@ namespace KeyTool
 
             if (Find())
                 return 0;
+            Console.WriteLine("No key found");
             return 2;
         }
 
         private bool Find()
         {
-            if (!CngKey.Exists(Options.Name))
+            if (!CngKey.Exists(Options.Name, Options.Provider, Options.KeyOpenOptions))
             {
                 return false;
             }
             
-            using (var k = CngKey.Open(Options.Name))
+            using (var k = CngKey.Open(Options.Name, Options.Provider, Options.KeyOpenOptions))
             {
                 Console.WriteLine("Found key " + Options.Name);
                 Console.WriteLine("\t algorithm: " + k.Algorithm);
@@ -57,6 +58,7 @@ namespace KeyTool
     public class FindOptions
     {
         private OptionSet _opts;
+        private CngKeyOpenOptions _keyOpenOptions;
 
 
         public string Name { get; private set; }
@@ -71,13 +73,27 @@ namespace KeyTool
 
         public FindOptions()
         {
+            _keyOpenOptions = CngKeyOpenOptions.MachineKey | CngKeyOpenOptions.UserKey;
             _opts = new OptionSet()
                                       {
                                           {"n|name=", "The name of the key to find", v => Name = v},
                                        };
+            Provider = CngProvider.MicrosoftSoftwareKeyStorageProvider;
         }
 
         public bool Valid { get; private set; }
+
+        public CngKeyOpenOptions KeyOpenOptions
+        {
+            get {
+                return _keyOpenOptions;
+            }
+            set {
+                _keyOpenOptions = value;
+            }
+        }
+
+        public CngProvider Provider { get; set; }
 
         public void Write(TextWriter stream)
         {

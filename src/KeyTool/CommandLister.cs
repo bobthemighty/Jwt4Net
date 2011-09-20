@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace KeyTool
 {
+    [Command("list the commands available and display help information for commands.", "help", "?")]
     internal class CommandLister : KeyCommand
     {
         private string[] _args;
@@ -19,14 +20,9 @@ namespace KeyTool
             return 1;
         }
 
-        private void WriteCommandHelp(string cmdName)
+        private static void WriteCommandHelp(string cmdName)
         {
             new CommandBuilder().GetCommand(cmdName, new string[0]).WriteHelp(Console.Out);
-        }
-
-        public void WriteDescription(TextWriter stream)
-        {
-            stream.WriteLine("\thelp - list the commands available and display help information for commands.");
         }
 
         public void WriteHelp(TextWriter stream)
@@ -40,8 +36,13 @@ namespace KeyTool
 
             foreach (var t in types)
             {
+                var att = t.GetCustomAttributes(typeof (CommandAttribute), false).Cast<CommandAttribute>().First();
                 var cmd = Activator.CreateInstance(t) as KeyCommand;
-                cmd.WriteDescription(Console.Out);
+                var name = att.Names.First();
+                Console.Out.WriteLine("\t" +name);
+                if(att.Names.Count() > 1)
+                Console.Out.WriteLine("\t\taliases: " + string.Join(", ", att.Names.Skip(1)));
+                Console.Out.WriteLine("\t\t"+att.Description);
             }
 
         }
