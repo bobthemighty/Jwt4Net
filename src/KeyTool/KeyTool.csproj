@@ -52,6 +52,7 @@
     <Compile Include="CommandAttribute.cs" />
     <Compile Include="DeleteKey.cs" />
     <Compile Include="EccKeyGenerator.cs" />
+    <Compile Include="ExportKey.cs" />
     <Compile Include="GenerateKey.cs" />
     <Compile Include="GrantAccess.cs" />
     <Compile Include="ImportPfx.cs" />

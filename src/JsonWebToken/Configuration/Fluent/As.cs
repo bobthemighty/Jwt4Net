@@ -53,6 +53,16 @@ namespace Jwt4Net.Configuration.Fluent
         {
             get { return _ignoredRules; }
         }
+
+        public FluentConsumerConfig TrustIssuer(string myIssuerName, string httpsFooOrg)
+        {
+            _issuers.Add(new TrustedIssuer()
+                             {
+                                 KeyUriPattern = httpsFooOrg,
+                                 Name = myIssuerName
+                             });
+            return this;
+        }
     }
 
     public class TrustedIssuer : IIssuer
