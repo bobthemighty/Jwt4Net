@@ -61,7 +61,6 @@
     <Compile Include="EccTests.cs" />
     <Compile Include="HmacTests.cs" />
     <Compile Include="RsaShaTests.cs" />
-    <Compile Include="TokenReaderTests.cs" />
     <Compile Include="JsonClaimsetTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TokenSignerTests.cs" />
@@ -73,7 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App1.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

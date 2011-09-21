@@ -24,6 +24,11 @@ namespace Jwt4Net
             ServiceLocator.SetLocatorProvider(config.Configure());
         }
 
+        public static void Configure(FluentConsumerConfig consumerConfig = null, FluentIssuerConfig withSymmetricKey = null)
+        {
+            Configure(withSymmetricKey, consumerConfig);
+        }
+
         public static void Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig consumerConfig = null)
         {
             var c = new TinyIoCContainer();
