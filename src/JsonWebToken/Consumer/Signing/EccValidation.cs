@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Jwt4Net.Signing;
+using Penge;
 
 namespace Jwt4Net.Consumer.Signing
 {
@@ -50,6 +52,12 @@ namespace Jwt4Net.Consumer.Signing
                     dsa.FromXmlString(data, ECKeyXmlFormat.Rfc4050);
                     _cache.Cache(Encoding.UTF8.GetBytes(data), header.KeyId, header.KeyUri.ToString());
                     return dsa;
+                case KeyFormat.X509:
+                    var ms = new MemoryStream(Encoding.ASCII.GetBytes(data));
+                    var reader = new CngBuilder(new PemReader(ms));
+                    dsa = new ECDsaCng(reader.Build());
+                    _cache.Cache(Encoding.UTF8.GetBytes(dsa.ToXmlString(ECKeyXmlFormat.Rfc4050)), header.KeyId, header.KeyUri.ToString());
+                    return dsa;
             }
             throw new NotSupportedException("Can not open an ECC key with the keyformat " + header.KeyFormat);
         }
@@ -67,10 +75,12 @@ namespace Jwt4Net.Consumer.Signing
 
         public bool Verify(JsonWebToken token)
         {
-            var dsa = _keyProvider.LoadRemoteKey(token.Header);
-            var data = token.Payload;
-            var signature = token.Signature;
-            return dsa.VerifyData(data, signature);
+            using (var dsa = _keyProvider.LoadRemoteKey(token.Header))
+            {
+                var data = token.Payload;
+                var signature = token.Signature;
+                return dsa.VerifyData(data, signature);
+            }
         }
     }
 

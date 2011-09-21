@@ -15,5 +15,9 @@ namespace GenerateKey
         public string Password { get; set; }
 
         public IEnumerable<string> GrantAccess { get; set; }
+
+        public bool ExportPrivateKey { get; set; }
+
+        public bool DoNotPersist { get; set; }
     }
 }

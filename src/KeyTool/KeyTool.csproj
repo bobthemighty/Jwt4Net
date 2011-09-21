@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C9EE5038-4E1C-4DCF-BB7D-69EC1A0B63E4}</ProjectGuid>
+    <ProjectGuid>{A8614CB8-D8BE-46A7-BD78-007BA33A0E5B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HasKey</RootNamespace>
-    <AssemblyName>HasKey</AssemblyName>
+    <RootNamespace>KeyTool</RootNamespace>
+    <AssemblyName>KeyTool</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -34,8 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Security.Cryptography">
+      <HintPath>..\lib\Security.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,8 +47,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandBuilder.cs" />
+    <Compile Include="CommandLister.cs" />
+    <Compile Include="CommandAttribute.cs" />
+    <Compile Include="DeleteKey.cs" />
+    <Compile Include="EccKeyGenerator.cs" />
+    <Compile Include="GenerateKey.cs" />
+    <Compile Include="GrantAccess.cs" />
+    <Compile Include="ImportPfx.cs" />
+    <Compile Include="KeyCommand.cs" />
+    <Compile Include="KeyExists.cs" />
+    <Compile Include="KeyFinder.cs" />
+    <Compile Include="KeyOptionSet.cs" />
+    <Compile Include="KeyType.cs" />
+    <Compile Include="ListKeys.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cng2Pem\Penge.csproj">
+      <Project>{F9638D1E-4120-4932-85EB-133B96738E70}</Project>
+      <Name>Penge</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

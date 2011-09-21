@@ -100,7 +100,12 @@
     <Compile Include="Consumer\TokenReader.cs" />
     <Compile Include="Tinyioc.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Cng2Pem\Penge.csproj">
+      <Project>{F9638D1E-4120-4932-85EB-133B96738E70}</Project>
+      <Name>Penge</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
