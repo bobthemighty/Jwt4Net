@@ -18,7 +18,7 @@ string tokenString = issuer.Sign();
 
 
 // consume and validate the signed claims
-if(false == consumer.TryConsume(tokenString))
+if(false == consumer.TryConsume(tokenString, out token))
 {
   throw new WonkyTokenException(consumer.FailureReason);
 }
