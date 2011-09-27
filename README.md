@@ -1,22 +1,29 @@
-Jwt4Net is a C# library for issuing and consuming Json Web Tokens.
+Jwt4Net is a C# library for issuing and consuming [Json Web Tokens](http://self-issued.info/docs/draft-jones-json-web-token.html).
 
 It offers strongly typed token values, and a simple model for issuance and consumption.
 Validation of tokens is extensible by creating new implementations of ITokenValidationRule, and tokens can contain arbitrary claims.
 
 ```C#
+
 var issuer = JwtContainer.CreateIssuer();
+var consumer = JwtContainer.CreateConsumer();
+JsonWebToken token;
+
+// set your claims.
 issuer.Set(MyClaims.Age, 21);
 issuer.Set(MyClaims.Name, "Hubert von Peeblefruit");
 
+// issue a new signed token.
 string tokenString = issuer.Sign();
 
-JsonWebToken token;
-var consumer = JwtContainer.CreateConsumer();
+
+// consume and validate the signed claims
 if(false == consumer.TryConsume(tokenString))
 {
   throw new WonkyTokenException(consumer.FailureReason);
 }
 
+// access the strongly-typed values.
 int age = token.Claims.Get(MyClaims.Age).Value;
 string name = token.Claims.Get(MyClaims.Name).Value;
 ```
