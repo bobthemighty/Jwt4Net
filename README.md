@@ -62,3 +62,4 @@ Still to do:
 * Split JWT from JWS.
 * Implement JWS encryption
 * Implement JSON-encoded public key certificates
+* Allow RSA keys from legacy CryptoAPI key stores
