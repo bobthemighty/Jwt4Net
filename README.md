@@ -37,11 +37,7 @@ get install albacore
 get install version_bumper
 ```
 
-You can then build from the command line by executing
-
-`` rake`` 
-
-from the /src directory
+You can then build from the command line by executing `` rake`` from the /src directory.
 
 
 
