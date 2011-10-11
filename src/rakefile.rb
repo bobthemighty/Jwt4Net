@@ -1,10 +1,6 @@
 require 'albacore'
 require 'version_bumper'
 
-def env_buildversion
-  bumper_version.to_s
-end
-
 desc "Build project"
 task :default => ['bump:build', 'albacore:assemblyinfo', 'albacore:msbuild', 'albacore:mspec']
      
@@ -24,15 +20,14 @@ task :default => ['bump:build', 'albacore:assemblyinfo', 'albacore:msbuild', 'al
   end
 
   all_assemblies_map = {
-    'jwt4net_asminfo' => {:folder => 'JsonWebToken'}
+    'jwt4net_asminfo' => {:folder => 'JsonWebToken'},
+    'keytool_asminfo' => {:folder => 'KeyTool'},
+    'penge_asminfo' => {:folder => 'Cng2Pem'},
   }
 	
 	all_assemblies_map.each do |assembly_name, values|
 	  puts "Defining task :#{assembly_name}"
 	  folder = values[:folder]
-	  vFile = "#{folder}\\VERSION"
-	  puts "Using version file #{vFile}"
-	  bumper_file vFile
 	  assemblyinfo assembly_name.to_sym do |asm|
 	    asm.output_file = "#{folder}\\Properties\\assemblyinfo.cs"
 	    asm.version = bumper_version.to_s
