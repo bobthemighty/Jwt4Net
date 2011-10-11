@@ -1,5 +1,4 @@
-﻿using System;
-using Jwt4Net.Configuration;
+﻿using Jwt4Net.Configuration;
 using Jwt4Net.Configuration.Fluent;
 using Jwt4Net.Consumer.Validation;
 using Microsoft.Practices.ServiceLocation;
@@ -24,12 +23,12 @@ namespace Jwt4Net
             ServiceLocator.SetLocatorProvider(config.Configure());
         }
 
-        public static void Configure(FluentConsumerConfig consumerConfig = null, FluentIssuerConfig withSymmetricKey = null)
+        public static IContainerConfig Configure(FluentConsumerConfig consumerConfig = null, FluentIssuerConfig withSymmetricKey = null)
         {
-            Configure(withSymmetricKey, consumerConfig);
+            return Configure(withSymmetricKey, consumerConfig);
         }
 
-        public static void Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig consumerConfig = null)
+        public static IContainerConfig Configure(FluentIssuerConfig withSymmetricKey = null, FluentConsumerConfig consumerConfig = null)
         {
             var c = new TinyIoCContainer();
             var cfg = new DefaultContainerConfig(c);
@@ -46,10 +45,12 @@ namespace Jwt4Net
                 foreach(var rule in consumerConfig.IgnoredRules)
                 {
                     c.RemoveRegistration(new TinyIoCContainer.TypeRegistration(typeof(ITokenValidationRule), rule.FullName));
+                    c.RemoveRegistration(new TinyIoCContainer.TypeRegistration(rule.GetType(), string.Empty));
                 }
             }
 
             ServiceLocator.SetLocatorProvider(() =>cfg);
+            return cfg;
         }
     }
 }

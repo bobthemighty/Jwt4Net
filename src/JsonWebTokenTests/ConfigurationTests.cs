@@ -7,33 +7,10 @@ using Jwt4Net.Configuration.Fluent;
 using Jwt4Net.Consumer.Validation;
 using Machine.Specifications;
 using Microsoft.Practices.ServiceLocation;
-using TinyIoC;
 
 namespace JsonWebTokenTests
 {
-    public class When_using_the_default_configuration
-    {
-        Establish context = () =>
-                  Jwt4NetContainer.Configure(With.Default);
-
-        Because we_create_a_consumer_and_issuer = () =>
-                {
-                    Consumer = Jwt4NetContainer.CreateConsumer();
-                    Issuer = Jwt4NetContainer.CreateIssuer();
-                };
-
-        It should_successfully_roundtrip_a_token = () =>
-            {
-                JsonWebToken token;
-                Issuer.Set(KnownClaims.Expiry, DateTime.Now.AddDays(1));
-                Consumer.TryConsume(Issuer.Sign(), out token).ShouldBeTrue();
-            };
-
-        private static ITokenConsumer Consumer;
-        private static ITokenIssuer Issuer;
-    }
-
-    namespace When_using_fluent_configuration_for_hmac
+   namespace When_using_fluent_configuration_for_hmac
     {
         public class When_configuring_the_consumer
         {
@@ -99,7 +76,10 @@ namespace JsonWebTokenTests
             {
                 JsonWebToken token;
                 Issuer.Set(KnownClaims.Expiry, DateTime.Now.AddDays(-1));
-                Consumer.TryConsume(Issuer.Sign(), out token).ShouldBeTrue();
+                var result = Consumer.TryConsume(Issuer.Sign(), out token);
+                Consumer.FailureReason.ShouldBeNull();    
+                result.ShouldBeTrue();
+
             };
 
             private static ITokenIssuer Issuer;

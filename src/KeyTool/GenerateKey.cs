@@ -15,7 +15,6 @@ namespace KeyTool
     [Command("create a new key for use with jwt4net", "gen", "create")]
     internal class GenerateKey : KeyCommand
     {
-        private readonly string[] _args;
         private static KeyOptionSet Options;
         private OptionSet _optionSet = new OptionSet
                                            {

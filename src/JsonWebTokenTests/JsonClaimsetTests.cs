@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Jwt4Net;
 using Jwt4Net.Claims;
 using Machine.Specifications;
@@ -84,11 +83,14 @@ namespace JsonWebTokenTests
 
     public class When_fetching_expiry
     {
-        Establish the_claimset_is = () => claimset = new JsonClaimSet(@"{'iss' : 'my-issuer', 'exp': }");
+        static DateTime BobsBirthday = new DateTime(1982, 12, 15);
+
+        Establish the_claimset_is = () => claimset = new JsonClaimSet(@"{'iss' : 'my-issuer', 'exp': 408758400}");
 
         Because claim_is_read = () => claim = claimset.Get(KnownClaims.Expiry);
 
-        It should_be_null = () => claim.ShouldBeOfType<NullClaim<UnixTimeStamp>>();
+        It should_equate_to_bobs_birthday = () => claim.Value.ShouldEqual<UnixTimeStamp>(BobsBirthday);
+        It should_return_a_unix_time_stamp = () => claim.Value.ShouldBeOfType<UnixTimeStamp>();
 
         private static JsonClaimSet claimset;
 

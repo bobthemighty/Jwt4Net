@@ -8,7 +8,6 @@ namespace KeyTool
     [Command("Check for the existence of a key", "find", "exists")]
     public class KeyExists : KeyCommand
     {
-        private string[] _args;
         private FindOptions Options;
 
         public int Execute()

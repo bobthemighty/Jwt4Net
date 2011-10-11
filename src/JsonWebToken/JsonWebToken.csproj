@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jwt4Net</RootNamespace>
     <AssemblyName>Jwt4Net</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\build\working\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -85,7 +85,7 @@
     <Compile Include="Claims\JsonWebTokenHeader.cs" />
     <Compile Include="Claims\KnownClaims.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Signing\Class1.cs" />
+    <Compile Include="Signing\SigningAlgorithmExtensions.cs" />
     <Compile Include="Signing\CryptoProvider.cs" />
     <Compile Include="Issuer\EcdsaCngSigning.cs" />
     <Compile Include="Signing\HmacSigning.cs" />

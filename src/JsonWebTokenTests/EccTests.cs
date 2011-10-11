@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Jwt4Net;
 using Jwt4Net.Claims;
 using Jwt4Net.Configuration;
@@ -47,28 +47,52 @@ namespace JsonWebTokenTests
 
     public class EccContext : tokenRoundtripContext
     {
-        protected static void UseKey(CngKey cngKey)
+        protected static void GivenTheKey(string keyname, CngAlgorithm algorithm)
         {
-            KeyContainer = new FakeEccKeyRepository(cngKey);
-            TinyIoCContainer.Current.Register(typeof(ICngKeyProvider), typeof(FakeEccKeyRepository), KeyContainer);
-            TinyIoCContainer.Current.Register(typeof(IEccPublicKeyProvider), typeof(FakeEccKeyRepository), KeyContainer);
-            TinyIoCContainer.Current.Register(typeof(IRsaPublicKeyProvider), typeof(FakeRsaKeyRepository), new FakeRsaKeyRepository(CngKey.Create(CngAlgorithm2.Rsa)));
+            Key = CngKey.Create(algorithm, keyname, new CngKeyCreationParameters
+            {
+                Provider = CngProvider.MicrosoftSoftwareKeyStorageProvider,
+                KeyCreationOptions = CngKeyCreationOptions.MachineKey,
+                KeyUsage = CngKeyUsages.Signing
+            });
         }
+
+
+        protected static CngKey Key;
+
+        protected static IContainerConfig ConfigureTheContainer()
+        {
+             var kc = new FakeEccKeyRepository(Key);
+
+            return Jwt4NetContainer.Configure(
+                As.Issuer("my issuer").WithCngKey(Key.KeyName, "https://example.org/"),
+                As.Consumer().TrustIssuer("my issuer", "https://example.org/"))
+                
+                .Replace<ICngKeyProvider, FakeEccKeyRepository>(kc)
+                .Replace<IEccPublicKeyProvider, FakeEccKeyRepository>(kc);
+        }
+
+        Cleanup the_key = () =>
+                                      {
+                                          if (null != Key)
+                                          {
+                                              Key.Delete();
+                                              Key.Dispose();
+                                          }
+                                      };
     }
 
    
 
     public class When_signing_an_ecc_256_token : EccContext
     {
-        Establish context = () =>
-                {
-                    CngKey cngKey = CngKey.Create(CngAlgorithm.ECDsaP256);
-                    UseKey(cngKey);
+        private static string keyname = "test-key-" + Guid.NewGuid();
 
-                    ConfigureIssuerKey(
-                        k => k.Algorithm = SigningAlgorithm.ES256,
-                        k => k.RemoteUri = "https://www.example.com/keys/ecc256",
-                        k => k.KeyFormat = KeyFormat.Rfc4050);
+        Establish context = () =>
+                   {
+                    GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+                    ConfigureTheContainer();
+                        
 
                     Issuer = Jwt4NetContainer.CreateIssuer();
                     Issuer.Set(KnownClaims.Expiry, new UnixTimeStamp(DateTime.Now.AddDays(1)));
@@ -81,22 +105,25 @@ namespace JsonWebTokenTests
 
     public class When_verifying_a_modified_256_token : EccContext
     {
+        private static readonly string keyname = "test-key-" + Guid.NewGuid();
+
         Establish context = () =>
         {
-            CngKey cngKey = CngKey.Create(CngAlgorithm.ECDsaP256);
-            UseKey(cngKey);
+            GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+            ConfigureTheContainer();
 
-            ConfigureIssuerKey(
-                k => k.Algorithm = SigningAlgorithm.ES256,
-                k => k.RemoteUri = "https://www.example.com/keys/ecc256",
-                k => k.KeyFormat = KeyFormat.Rfc4050);
+            var initialExpiryDate = new UnixTimeStamp(DateTime.Now.AddDays(1));
+            var modifiedValue = initialExpiryDate.Value + 10000;
 
             Issuer = Jwt4NetContainer.CreateIssuer();
+            Issuer.Set(KnownClaims.Expiry, initialExpiryDate);
             Consumer = Jwt4NetContainer.CreateConsumer();
-            TokenString = Issuer.Sign();
 
+            TokenString = Issuer.Sign();
             var parts = TokenString.Split('.');
-            TokenString = TokenString.Replace(parts[1], "{'iss': 'jwt4net', 'userid':9187}".Base64UrlEncode());
+            var modifiedPayload = parts[1].Base64UrlDecode(Encoding.UTF8).Replace(initialExpiryDate.Value.ToString(), modifiedValue.ToString());
+
+            TokenString = TokenString.Replace(parts[1], modifiedPayload.Base64UrlEncode());
         };
 
         Because token_is_consumed = () => Result = Consumer.TryConsume(TokenString, out Token);
@@ -113,22 +140,21 @@ namespace JsonWebTokenTests
 
     public class When_verifying_a_token_from_an_untrusted_issuer : EccContext
     {
+        private static readonly string keyname = "test-key-" + Guid.NewGuid();
         Establish context = () =>
         {
-            CngKey cngKey = CngKey.Create(CngAlgorithm.ECDsaP256);
-            UseKey(cngKey);
+            GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
 
-            ConfigureIssuerKey(
-                k => k.Algorithm = SigningAlgorithm.ES256,
-                k => k.RemoteUri = "https://www.example.com/keys/ecc256",
-                k => k.KeyFormat = KeyFormat.Rfc4050);
+            var kc = new FakeEccKeyRepository(Key);
+
+            Jwt4NetContainer.Configure(
+                As.Issuer("I am not a trusted issuer, mate.").WithCngKey(keyname, "https://example.org/"),
+                As.Consumer().TrustIssuer("my issuer", "https://example.org/"))
+             .Replace<IEccPublicKeyProvider, FakeEccKeyRepository>(kc);
 
             Issuer = Jwt4NetContainer.CreateIssuer();
             Consumer = Jwt4NetContainer.CreateConsumer();
             TokenString = Issuer.Sign();
-
-            var parts = TokenString.Split('.');
-            TokenString = TokenString.Replace(parts[1], "{'iss': 'this is not a recognised issuer'}".Base64UrlEncode());
         };
 
         Because token_is_consumed = () => Result = Consumer.TryConsume(TokenString, out Token);
@@ -147,13 +173,8 @@ namespace JsonWebTokenTests
     {
         Establish context = () =>
         {
-            CngKey cngKey = CngKey.Create(CngAlgorithm.ECDsaP384);
-            UseKey(cngKey);
-
-            ConfigureIssuerKey(
-                k => k.Algorithm = SigningAlgorithm.ES384,
-                k => k.RemoteUri = "https://www.example.com/keys/ecc384",
-                k => k.KeyFormat = KeyFormat.Rfc4050);
+            GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            ConfigureTheContainer();
 
             Issuer = Jwt4NetContainer.CreateIssuer();
             Issuer.Set(KnownClaims.Expiry, new UnixTimeStamp(DateTime.Now.AddDays(1)));
@@ -168,15 +189,11 @@ namespace JsonWebTokenTests
     {
         Establish context = () =>
         {
-            CngKey cngKey = CngKey.Create(CngAlgorithm.ECDsaP521);
-            UseKey(cngKey);
-
-            ConfigureIssuerKey(
-                k => k.Algorithm = SigningAlgorithm.ES512,
-                k => k.RemoteUri = "https://www.example.com/keys/ecc",
-                k => k.KeyFormat = KeyFormat.Rfc4050);
+            GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            ConfigureTheContainer();
 
             Issuer = Jwt4NetContainer.CreateIssuer();
+            Issuer.Set(KnownClaims.Expiry, new UnixTimeStamp(DateTime.Now.AddDays(1)));
             Consumer = Jwt4NetContainer.CreateConsumer();
         };
 

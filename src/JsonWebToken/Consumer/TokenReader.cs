@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Text;
 using Jwt4Net.Configuration;
+using Jwt4Net.Consumer;
 using Jwt4Net.Signing;
 
 namespace Jwt4Net

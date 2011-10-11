@@ -21,13 +21,10 @@ namespace Jwt4Net.Signing
             {
                 case SigningAlgorithm.HS256:
                     return new HMACSHA256(key);
-                    break;
                 case SigningAlgorithm.HS384:
                     return  new HMACSHA384(key);
-                    break;
                 case SigningAlgorithm.HS512:
                     return new HMACSHA512(key);
-                    break;
             }
             throw new NotSupportedException("No signing found for algorithm "+algorithm);
         }

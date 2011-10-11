@@ -14,6 +14,11 @@ namespace Jwt4Net.Signing
             return s;
         }
 
+        public static string Base64Encode(this string arg)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(arg));
+        }
+
         public static string Base64UrlEncode(this string arg)
         {
             return Encoding.UTF8.GetBytes(arg).Base64UrlEncode();
