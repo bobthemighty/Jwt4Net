@@ -10,38 +10,17 @@ using Jwt4Net.Consumer.Signing;
 using Jwt4Net.Consumer.Validation;
 using Jwt4Net.Signing;
 using Machine.Specifications;
-using Security.Cryptography;
-using TinyIoC;
 
 namespace JsonWebTokenTests
 {
     public abstract class tokenRoundtripContext
     {
-        private Establish context = () =>
-                                {
-                                    // use a single well-known key for both encoding and decoding
-                                    Jwt4NetContainer.Configure(With.Default);
-                                    TinyIoCContainer.Current.Register(typeof(IIssuerConfig), issuerConfig);
-                                    TinyIoCContainer.Current.Register(typeof(IKeyConfig), issuerConfig.Key);
-                                    TinyIoCContainer.Current.Register(typeof(IConsumerConfig), new FakeConsumerConfig());
-                                };
-
+        
         protected static ITokenIssuer Issuer;
         protected static ICngKeyProvider KeyContainer;
-        private static IIssuerConfig issuerConfig = new FakeIssuerConfig() { Key = new FakeKeyConfig() };
-        private static FakeConfig config = new FakeConfig(issuerConfig);
         protected static JsonWebToken Token;
         protected static ITokenConsumer Consumer;
         protected static string TokenString { get; set; }
-
-        protected static void ConfigureIssuerKey(params Action<FakeKeyConfig>[] with)
-        {
-            foreach (var cfg in with)
-            {
-                cfg(issuerConfig.Key as FakeKeyConfig);
-            }
-        }
-
 
     }
 
@@ -69,17 +48,17 @@ namespace JsonWebTokenTests
                 .Replace<IEccPublicKeyProvider, FakeEccKeyRepository>(kc);
         }
 
-        protected static void RemoveKey(CngKey cngKey)
+        protected static void RemoveKey(string keyname)
         {
-            if (null != cngKey)
+            if(CngKey.Exists(keyname, CngProvider.MicrosoftSoftwareKeyStorageProvider, CngKeyOpenOptions.MachineKey))
             {
-                cngKey.Delete();
-                cngKey.Dispose();
+                using(var key = CngKey.Open(keyname, CngProvider.MicrosoftSoftwareKeyStorageProvider, CngKeyOpenOptions.MachineKey))
+                {
+                    key.Delete();
+                }
             }
         }
     }
-
-   
 
     public class When_signing_an_ecc_256_token : EccContext
     {
@@ -87,7 +66,7 @@ namespace JsonWebTokenTests
 
         Establish context = () =>
                    {
-                    key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+                    var key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
                     ConfigureTheContainer(key);
                         
 
@@ -99,19 +78,15 @@ namespace JsonWebTokenTests
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
 
-        Cleanup the_key = () => RemoveKey(key);
-        private static CngKey key;
-
+        Cleanup the_key = () => RemoveKey(keyname);
     }
 
     public class When_verifying_a_modified_256_token : EccContext
     {
         private static readonly string keyname = "test-key-" + Guid.NewGuid();
-        private static CngKey key;
-
         Establish context = () =>
         {
-            key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+            var key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
             ConfigureTheContainer(key);
 
             var initialExpiryDate = new UnixTimeStamp(DateTime.Now.AddDays(1));
@@ -139,18 +114,16 @@ namespace JsonWebTokenTests
 
         protected static bool Result { get; set; }
 
-        Cleanup the_key = () => RemoveKey(key);
+        Cleanup the_key = () => RemoveKey(keyname);
     }
 
     public class When_verifying_a_token_from_an_untrusted_issuer : EccContext
     {
-        private static CngKey key;
         private static readonly string keyname = "test-key-" + Guid.NewGuid();
 
         Establish context = () =>
         {
-            key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
-
+            var key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
             var kc = new FakeEccKeyRepository(key);
 
             Jwt4NetContainer.Configure(
@@ -174,16 +147,16 @@ namespace JsonWebTokenTests
 
         protected static bool Result { get; set; }
 
-        Cleanup the_key = () => RemoveKey(key);
+        Cleanup the_key = () => RemoveKey(keyname);
     }
 
     public class When_signing_an_ecc_384_token : EccContext
     {
-        private static CngKey key;
+        private static string keyname = "test-key-" + Guid.NewGuid();
 
         Establish context = () =>
         {
-            key = GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            var key = GivenTheKey(keyname, CngAlgorithm.ECDsaP384);
             ConfigureTheContainer(key);
 
             Issuer = Jwt4NetContainer.CreateIssuer();
@@ -194,16 +167,16 @@ namespace JsonWebTokenTests
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
 
-        Cleanup the_key = () => RemoveKey(key);
+        Cleanup the_key = () => RemoveKey(keyname);
     }
 
     public class When_signing_an_ecc_521_token : EccContext
     {
-        private static CngKey key;
+        private static string keyname = "test-key-" + Guid.NewGuid();
 
         Establish context = () =>
         {
-            key = GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            var key = GivenTheKey(keyname, CngAlgorithm.ECDsaP384);
             ConfigureTheContainer(key);
 
             Issuer = Jwt4NetContainer.CreateIssuer();
@@ -214,7 +187,7 @@ namespace JsonWebTokenTests
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
 
-        Cleanup the_key = () => RemoveKey(key);
+        Cleanup the_key = () => RemoveKey(keyname);
     }
 
 
@@ -241,127 +214,4 @@ public class FakeEccKeyRepository : ICngKeyProvider, IEccPublicKeyProvider
             return _public;
         }
     }
-
-    public class EmptyKeyContainer : ICngKeyProvider, IRsaPublicKeyProvider, IEccPublicKeyProvider
-    {
-        public CngKey GetKey()
-        {
-            throw new NotImplementedException();
-        }
-
-        RSACng IRsaPublicKeyProvider.LoadRemoteKey(JsonWebTokenHeader header)
-        {
-            throw new NotImplementedException();
-        }
-
-        ECDsaCng IEccPublicKeyProvider.LoadRemoteKey(JsonWebTokenHeader header)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-public class FakeRsaKeyRepository :ICngKeyProvider, IRsaPublicKeyProvider
-{
-    private readonly CngKey _key;
-        private RSACng _public;
-
-        public FakeRsaKeyRepository(CngKey key)
-        {
-            _key = key;
-            var xml = new RSACng(key).ToXmlString(false);
-            _public = new RSACng();
-            _public.FromXmlString(xml);
-        }
-
-        public CngKey GetKey()
-        {
-            return _key;
-        }
-
-        public RSACng LoadRemoteKey(JsonWebTokenHeader header)
-        {
-            return _public;
-        } 
-}
-
-
-    public class FakeConfig 
-    {
-        public FakeConfig(IIssuerConfig cfg)
-        {
-            Issuer = cfg;
-        }
-        public IIssuerConfig Issuer
-        {
-            get;
-            set;
-        }
-
-        public IConsumerConfig ReaderSettings
-        {
-            get { return new FakeConsumerConfig(); }
-        }
-    }
-
-    public class FakeConsumerConfig : IConsumerConfig
-    {
-        public bool AllowUnsignedTokens
-        {
-            get; set;
-        }
-
-        public IEnumerable<IIssuer> TrustedIssuers
-        {
-            get
-            {
-                return new[]
-                               {
-                                   new TrustedIssuer()
-                               };
-            }
-        }
-
-        public class TrustedIssuer : IIssuer
-        {
-            public string Name
-            {
-                get { return "jwt4net"; }
-            }
-
-            public string KeyUriPattern
-            {
-                get { return ".*"; }
-            }
-
-            public string SharedSecret
-            {
-                get { return "secret"; }
-            }
-        }
-    }
-        public class FakeIssuerConfig : IIssuerConfig
-        {
-            public string IssuerName
-            {
-                get { return "jwt4net"; }
-            }
-
-            public IKeyConfig Key
-            {
-                get;
-                set;
-            }
-        }
-
-        public class FakeKeyConfig : IKeyConfig
-        {
-            public SigningAlgorithm Algorithm { get; set; }
-            public KeyFormat KeyFormat { get; set; }
-            public string LocalName { get; set; }
-            public string RemoteId { get; set; }
-            public string RemoteUri { get; set; }
-            public bool IsUserKey { get; set; }
-            public string KeyValue { get; set; }
-        }
-    
 }
