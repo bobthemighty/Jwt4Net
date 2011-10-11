@@ -47,10 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="asn1.cs" />
-    <Compile Include="Class1.cs" />
-    <Compile Include="Class2.cs" />
+    <Compile Include="Utf8StringEncoding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="When_reading_an_ecc_256_prime_v1_public_key.cs" />
+    <Compile Include="When_reading_an_rsa_public_key.cs" />
+    <Compile Include="When_reading_pem_files.cs" />
     <Compile Include="When_using_a_roundtripped_ecc_key.cs" />
   </ItemGroup>
   <ItemGroup>
