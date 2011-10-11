@@ -5,4 +5,8 @@ obj
 *.user
 *.suo
 *.cache
+*.bak
 pkg
+build/jwt4net.*
+build/keytool.*
+build/working
