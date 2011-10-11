@@ -28,6 +28,22 @@ int age = token.Claims.Get(MyClaims.Age).Value;
 string name = token.Claims.Get(MyClaims.Name).Value;
 ```
 
+Jwt4Net uses albacore for building.
+If you already have ruby installed, then install albacore, rake and version_bumper
+
+```
+gem install rake
+get install albacore
+get install version_bumper
+```
+
+You can then build from the command line by executing
+
+`` rake`` 
+
+from the /src directory
+
+
 
 Jwt4Net is currently at beta stage 0.8:
 
