@@ -33,8 +33,8 @@ If you already have ruby installed, then install albacore, rake and version_bump
 
 ```
 gem install rake
-get install albacore
-get install version_bumper
+gem install albacore
+gem install version_bumper
 ```
 
 You can then build from the command line by executing `` rake`` from the /src directory.
