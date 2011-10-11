@@ -47,9 +47,9 @@ namespace JsonWebTokenTests
 
     public class EccContext : tokenRoundtripContext
     {
-        protected static void GivenTheKey(string keyname, CngAlgorithm algorithm)
+        protected static CngKey GivenTheKey(string keyname, CngAlgorithm algorithm)
         {
-            Key = CngKey.Create(algorithm, keyname, new CngKeyCreationParameters
+            return CngKey.Create(algorithm, keyname, new CngKeyCreationParameters
             {
                 Provider = CngProvider.MicrosoftSoftwareKeyStorageProvider,
                 KeyCreationOptions = CngKeyCreationOptions.MachineKey,
@@ -57,29 +57,26 @@ namespace JsonWebTokenTests
             });
         }
 
-
-        protected static CngKey Key;
-
-        protected static IContainerConfig ConfigureTheContainer()
+        protected static IContainerConfig ConfigureTheContainer(CngKey cngKey)
         {
-             var kc = new FakeEccKeyRepository(Key);
+             var kc = new FakeEccKeyRepository(cngKey);
 
             return Jwt4NetContainer.Configure(
-                As.Issuer("my issuer").WithCngKey(Key.KeyName, "https://example.org/"),
+                As.Issuer("my issuer").WithCngKey(cngKey.KeyName, "https://example.org/"),
                 As.Consumer().TrustIssuer("my issuer", "https://example.org/"))
                 
                 .Replace<ICngKeyProvider, FakeEccKeyRepository>(kc)
                 .Replace<IEccPublicKeyProvider, FakeEccKeyRepository>(kc);
         }
 
-        Cleanup the_key = () =>
-                                      {
-                                          if (null != Key)
-                                          {
-                                              Key.Delete();
-                                              Key.Dispose();
-                                          }
-                                      };
+        protected static void RemoveKey(CngKey cngKey)
+        {
+            if (null != cngKey)
+            {
+                cngKey.Delete();
+                cngKey.Dispose();
+            }
+        }
     }
 
    
@@ -90,8 +87,8 @@ namespace JsonWebTokenTests
 
         Establish context = () =>
                    {
-                    GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
-                    ConfigureTheContainer();
+                    key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+                    ConfigureTheContainer(key);
                         
 
                     Issuer = Jwt4NetContainer.CreateIssuer();
@@ -101,16 +98,21 @@ namespace JsonWebTokenTests
 
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
+
+        Cleanup the_key = () => RemoveKey(key);
+        private static CngKey key;
+
     }
 
     public class When_verifying_a_modified_256_token : EccContext
     {
         private static readonly string keyname = "test-key-" + Guid.NewGuid();
+        private static CngKey key;
 
         Establish context = () =>
         {
-            GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
-            ConfigureTheContainer();
+            key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+            ConfigureTheContainer(key);
 
             var initialExpiryDate = new UnixTimeStamp(DateTime.Now.AddDays(1));
             var modifiedValue = initialExpiryDate.Value + 10000;
@@ -136,16 +138,20 @@ namespace JsonWebTokenTests
             () => Consumer.FailureReason.ShouldBeOfType<SignatureMustBeValidRule>();
 
         protected static bool Result { get; set; }
+
+        Cleanup the_key = () => RemoveKey(key);
     }
 
     public class When_verifying_a_token_from_an_untrusted_issuer : EccContext
     {
+        private static CngKey key;
         private static readonly string keyname = "test-key-" + Guid.NewGuid();
+
         Establish context = () =>
         {
-            GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
+            key = GivenTheKey(keyname, CngAlgorithm.ECDsaP256);
 
-            var kc = new FakeEccKeyRepository(Key);
+            var kc = new FakeEccKeyRepository(key);
 
             Jwt4NetContainer.Configure(
                 As.Issuer("I am not a trusted issuer, mate.").WithCngKey(keyname, "https://example.org/"),
@@ -167,14 +173,18 @@ namespace JsonWebTokenTests
             () => Consumer.FailureReason.ShouldBeOfType<IssuerMustBeTrustedRule>();
 
         protected static bool Result { get; set; }
+
+        Cleanup the_key = () => RemoveKey(key);
     }
 
     public class When_signing_an_ecc_384_token : EccContext
     {
+        private static CngKey key;
+
         Establish context = () =>
         {
-            GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
-            ConfigureTheContainer();
+            key = GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            ConfigureTheContainer(key);
 
             Issuer = Jwt4NetContainer.CreateIssuer();
             Issuer.Set(KnownClaims.Expiry, new UnixTimeStamp(DateTime.Now.AddDays(1)));
@@ -183,14 +193,18 @@ namespace JsonWebTokenTests
 
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
+
+        Cleanup the_key = () => RemoveKey(key);
     }
 
     public class When_signing_an_ecc_521_token : EccContext
     {
+        private static CngKey key;
+
         Establish context = () =>
         {
-            GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
-            ConfigureTheContainer();
+            key = GivenTheKey("test-key-" + Guid.NewGuid(), CngAlgorithm.ECDsaP384);
+            ConfigureTheContainer(key);
 
             Issuer = Jwt4NetContainer.CreateIssuer();
             Issuer.Set(KnownClaims.Expiry, new UnixTimeStamp(DateTime.Now.AddDays(1)));
@@ -199,6 +213,8 @@ namespace JsonWebTokenTests
 
         Because a_token_is_generated = () => TokenString = Issuer.Sign();
         It should_be_readable = () => Consumer.TryConsume(TokenString, out Token).ShouldBeTrue();
+
+        Cleanup the_key = () => RemoveKey(key);
     }
 
 
