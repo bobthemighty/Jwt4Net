@@ -1,3 +1,5 @@
+## What is this thing?
+
 Jwt4Net is a C# library for issuing and consuming [Json Web Tokens](http://self-issued.info/docs/draft-jones-json-web-token.html).
 
 It offers strongly typed token values, and a simple model for issuance and consumption.
@@ -28,6 +30,8 @@ int age = token.Claims.Get(MyClaims.Age).Value;
 string name = token.Claims.Get(MyClaims.Name).Value;
 ```
 
+## How do I build it?
+
 Jwt4Net uses albacore for building.
 If you already have ruby installed, then install albacore, rake and version_bumper
 
@@ -39,7 +43,7 @@ gem install version_bumper
 
 You can then build from the command line by executing `` rake`` from the /src directory.
 
-
+## Is it going to work?
 
 Jwt4Net is currently at beta stage 0.8:
 
