@@ -39,7 +39,7 @@ namespace KeyTool
         {
             if (null == Options.GrantAccess)
                 return;
-            var path = @"C:\Documents and Settings\All Users\Application Data\Microsoft\Crypto\Keys\" + Key.UniqueName;
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Microsoft\Crypto\Keys\", Key.UniqueName);
             var file = new FileInfo(path);
             var policy = file.GetAccessControl();
             foreach(var principal in Options.GrantAccess)
@@ -55,7 +55,7 @@ namespace KeyTool
         {
             WritePublicKey();
             WritePrivateKey();
-            Console.WriteLine("Unique name: "+Key.UniqueName);
+            Console.WriteLine("Unique name: " + Key.UniqueName);
             Console.WriteLine(new ECDsaCng(Key).ToXmlString(ECKeyXmlFormat.Rfc4050));
         }
 
