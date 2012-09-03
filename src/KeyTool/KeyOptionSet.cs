@@ -27,5 +27,12 @@ namespace GenerateKey
                           && new[] { 256, 384, 521 }.Contains(KeySize));
         }
         }
+
+        public int ExpiryDays { get; set; }
+
+        public KeyOptionSet()
+        {
+            ExpiryDays = 365;
+        }
     }
 }

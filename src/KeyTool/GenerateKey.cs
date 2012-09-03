@@ -24,7 +24,8 @@ namespace KeyTool
                                                {"ga|grantaccess=", "A comma-delimited list of users who need read-access to the generated key.", v => Options.GrantAccess = v.Split(',').Select(s => s.Trim())},
                                                {"e|export-private", "If present, this flag causes the program to export the public/private key pair as a PFX", v => Options.ExportPrivateKey = true},
                                                {"pw|password=", "A password for protecting private key information, should only be used with the export-private flag", v => Options.Password = v},
-                                               {"np|no-persistence", "Do not persist the key on this machine. Useful for generating keys for other environments", v=> Options.DoNotPersist = true}
+                                               {"np|no-persistence", "Do not persist the key on this machine. Useful for generating keys for other environments", v=> Options.DoNotPersist = true},
+                                               {"ex|expiry-days=", "Number of days before the key expires, the default is 365", (int v)=> Options.ExpiryDays = v}
                                            };
         private void DeleteKey()
         {
@@ -78,7 +79,8 @@ namespace KeyTool
                     {
                         CertificateCreationOptions = X509CertificateCreationOptions.None,
                         SignatureAlgorithm = X509CertificateSignatureAlgorithm.ECDsaSha512,
-                        TakeOwnershipOfKey = false
+                        TakeOwnershipOfKey = false,
+                        EndTime = DateTime.Now.AddDays(Options.ExpiryDays)
                     };
 
             var cert = Key.CreateSelfSignedCertificate(creationParams);
