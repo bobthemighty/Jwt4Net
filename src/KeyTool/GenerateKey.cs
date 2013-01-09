@@ -24,7 +24,8 @@ namespace KeyTool
                                                {"ga|grantaccess=", "A comma-delimited list of users who need read-access to the generated key.", v => Options.GrantAccess = v.Split(',').Select(s => s.Trim())},
                                                {"e|export-private", "If present, this flag causes the program to export the public/private key pair as a PFX", v => Options.ExportPrivateKey = true},
                                                {"pw|password=", "A password for protecting private key information, should only be used with the export-private flag", v => Options.Password = v},
-                                               {"np|no-persistence", "Do not persist the key on this machine. Useful for generating keys for other environments", v=> Options.DoNotPersist = true}
+                                               {"np|no-persistence", "Do not persist the key on this machine. Useful for generating keys for other environments", v=> Options.DoNotPersist = true},
+                                               {"ex|expiry-days=", "Number of days before the key expires, the default is 365", (int v)=> Options.ExpiryDays = v}
                                            };
         private void DeleteKey()
         {
@@ -39,7 +40,7 @@ namespace KeyTool
         {
             if (null == Options.GrantAccess)
                 return;
-            var path = @"C:\Documents and Settings\All Users\Application Data\Microsoft\Crypto\Keys\" + Key.UniqueName;
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"Microsoft\Crypto\Keys\", Key.UniqueName);
             var file = new FileInfo(path);
             var policy = file.GetAccessControl();
             foreach(var principal in Options.GrantAccess)
@@ -55,7 +56,7 @@ namespace KeyTool
         {
             WritePublicKey();
             WritePrivateKey();
-            Console.WriteLine("Unique name: "+Key.UniqueName);
+            Console.WriteLine("Unique name: " + Key.UniqueName);
             Console.WriteLine(new ECDsaCng(Key).ToXmlString(ECKeyXmlFormat.Rfc4050));
         }
 
@@ -78,7 +79,8 @@ namespace KeyTool
                     {
                         CertificateCreationOptions = X509CertificateCreationOptions.None,
                         SignatureAlgorithm = X509CertificateSignatureAlgorithm.ECDsaSha512,
-                        TakeOwnershipOfKey = false
+                        TakeOwnershipOfKey = false,
+                        EndTime = DateTime.Now.AddDays(Options.ExpiryDays)
                     };
 
             var cert = Key.CreateSelfSignedCertificate(creationParams);
